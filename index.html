@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>aku & tutut</title>
+<meta name="description" content="Kartu cinta versi web-portofolio: slideshow, gallery, our story, love notes, musik, efek, dan lightbox. Ganti gambar & lagu sesuai kebutuhan.">
+<style>
+/* ==============================
+   PALETTE & BASE
+   ============================== */
+:root{
+  --bg:#578bcf;--card:#cad7e4;--muted:#758ac0;
+  --accent-1:#0f419e;--accent-2:#2b3c68;
+  --glass: rgba(13,32,78,0.04);
+  --radius:14px;
+  --shadow: 0 10px 30px rgba(17,24,39,0.08);
+  --maxw:1100px;
+  --font-sans: Inter, Roboto, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:var(--font-sans);
+  background:linear-gradient(180deg,var(--bg) 0%, #eef4ff 100%);
+  color:#0f1724;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:60;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);border-bottom:1px solid rgba(13,32,78,0.06)}
+.nav .inner{max-width:var(--maxw);margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent-1),var(--accent-2));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;box-shadow:0 6px 18px rgba(45,108,223,0.18)}
+.nav-links a{color:var(--muted);text-decoration:none;margin-left:16px;font-weight:600;font-size:14px}
+
+/* CONTAINER */
+.wrap{max-width:var(--maxw);margin:28px auto;padding:0 20px}
+
+/* HERO */
+.hero{display:grid;grid-template-columns:1fr 420px;gap:22px;align-items:center}
+.card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px;border:1px solid rgba(13,32,78,0.04)}
+.hero h1{margin:0;font-size:28px;color:var(--accent-1)}
+.hero p.lead{margin:8px 0;color:var(--muted);line-height:1.45}
+
+/* SLIDESHOW */
+.slideshow{position:relative;border-radius:12px;overflow:hidden;height:340px;background:#e9f0ff}
+.slideshow img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .9s ease, transform .9s ease}
+.slideshow img.active{opacity:1;transform:scale(1)}
+.slide-controls{position:absolute;left:12px;bottom:12px;display:flex;gap:8px}
+.btn{background:white;border:1px solid rgba(13,32,78,0.06);padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:600}
+.meta{color:var(--muted);font-size:14px;margin-top:10px}
+
+/* SECTIONS */
+section{margin-top:22px}
+.section-title{font-size:18px;margin-bottom:12px;color:var(--accent-1);font-weight:700}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.panel{background:var(--card);padding:12px;border-radius:12px;border:1px solid rgba(13,32,78,0.04);box-shadow:0 6px 22px rgba(13,32,78,0.03)}
+
+/* TIMELINE */
+.timeline{display:flex;flex-direction:column;gap:12px}
+.time-item{display:flex;gap:12px;align-items:flex-start}
+.time-mark{min-width:96px;color:var(--muted);font-weight:700}
+.time-card{background:linear-gradient(180deg, rgba(45,108,223,0.03), rgba(138,168,255,0.01));padding:12px;border-radius:10px;border:1px solid rgba(45,108,223,0.06)}
+
+/* GALLERY (lightbox capable) */
+.thumb{width:100%;height:160px;object-fit:cover;border-radius:8px;cursor:pointer;display:block}
+.lightbox{position:fixed;inset:0;background:rgba(7,10,25,0.75);display:flex;align-items:center;justify-content:center;z-index:120;padding:20px}
+.lightbox img{max-width:95%;max-height:85%;border-radius:10px;box-shadow:0 20px 60px rgba(2,6,23,0.6)}
+
+video.thumb {
+  height:auto !important;
+  max-height:320px;
+  object-fit:contain !important;
+  background:#000;
+  border-radius:8px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+  display:block;
+  margin-top:10px;
+}
+
+/* COMPOSER */
+.composer textarea{width:100%;min-height:110px;border-radius:10px;border:1px solid rgba(13,32,78,0.06);padding:12px;font-size:15px;resize:vertical}
+.composer input{padding:10px;border-radius:8px;border:1px solid rgba(13,32,78,0.06);width:100%}
+
+/* LOVE NOTES */
+.note-bubble{background:linear-gradient(180deg, #fff 0%, #f7fbff 100%);padding:10px;border-radius:10px;border:1px solid rgba(13,32,78,0.04);font-weight:600;color:var(--muted)}
+
+/* FOOTER */
+footer{margin:28px 0 80px 0;color:var(--muted);text-align:center;font-size:14px}
+
+/* hearts/confetti */
+.heart{position:fixed;pointer-events:none;font-size:20px;opacity:0;transform:translateY(0);animation:heartFloat 5s linear forwards;z-index:80}
+@keyframes heartFloat{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-420px) scale(1.3)}}
+
+/* responsive */
+@media (max-width:1024px){.hero{grid-template-columns:1fr} .slideshow{height:280px}}
+@media (max-width:720px){.grid-3{grid-template-columns:1fr} .grid-2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- AUDIO -->
+<audio id="bgm" src="LAGU/Yahya_-_keepyousafe_(mp3.pm).mp3" autoplay loop muted preload="auto"></audio>
+<button id="playBgm" style="position:fixed;top:12px;right:12px;z-index:100;">▶️ Play Musik</button>
+
+<!-- NAV -->
+<nav class="nav" aria-label="Main navigation">
+  <div class="inner">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">♥</div>
+      <div>
+        <div style="font-weight:800">me & tutut</div>
+        <div style="font-size:12px;color:var(--muted)">love portofolio</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="#about">About</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#story">Our Story</a>
+      <a href="#message">Message</a>
+    </div>
+  </div>
+</nav>
+
+<main class="wrap">
+  <!-- HERO -->
+  <header class="hero card">
+    <div>
+      <h1>HAI TUTUSS</h1>
+      <p class="lead">next experience unlocked! ak bikinin km porto,smg aku first&last ya :p</p>
+      <p class="lead">sbelum lanjut scrool, jgn lupa nyalain lagu di kanan atas ya!</p>
+    </div>
+    <aside>
+      <div class="slideshow" id="slideshow">
+        <img src="POTO/15.jpg" class="active" alt="Slide 1">
+        <img src="POTO/12.jpg" alt="Slide 2">
+        <img src="POTO/8.jpg" alt="Slide 3">
+        <div class="slide-controls">
+          <button class="btn" id="prev">◀</button>
+          <button class="btn" id="next">▶</button>
+        </div>
+      </div>
+      <div style="margin-top:12px" class="card">
+        <div style="font-weight:700">Preview pesan</div>
+        <div id="previewText" style="color:var(--muted);margin-top:8px">makasih ya udah usaha berubah jadi lebih baik, proud of u bb!.</div>
+      </div>
+    </aside>
+  </header>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-title">About</div>
+    <div class="panel">
+      <p style="margin:0;color:var(--muted)">let me introduce my tutut gw, namanya pasya, dia suka sayur, suka udang, suka nutella, suka game, suka dara, suka males, suka ninggalin, suka cuekin, suka beliin keju, suka beliin susu. tapi terlepas dari dia suka apa atau kebiasaan baik/buruknya, pasya orang satu2nya yg mau aku ajak segalanya. gimanapun jalannya takdir, gaada yg harus dilupain semua tentang pasya.</p>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="gallery">
+    <div class="section-title">Gallery — Moments</div>
+    <div class="grid-3">
+      <div class="panel"><img src="POTO/13.jpg" class="thumb" alt="moment 1" data-full="POTO/13.jpg"></div>
+      <div class="panel"><img src="POTO/28.jpg" class="thumb" alt="moment 2" data-full="POTO/28.jpg"></div>
+      <div class="panel"><img src="POTO/29.jpg" class="thumb" alt="moment 3" data-full="POTO/29.jpg"></div>
+    </div>
+    <div style="margin-top:12px;color:var(--muted)">Ini yg dimaksud "gaada yg harus dilupain semua tentang pasya" hihi ><</div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section id="story">
+    <div class="section-title">Our Story — Timeline</div>
+    <div class="timeline">
+      <div class="time-item">
+        <div class="time-mark">OKTOBER 2024</div>
+        <div class="time-card">
+          <div style="font-weight:700">First fotbar</div>
+          <video class="thumb" autoplay loop muted playsinline>
+            <source src="video/v1.mp4" type="video/mp4">
+          </video>
+          <div style="color:var(--muted);margin-top:6px">di foto in gloria, lucu banget tapi kenapa harus danau wkwk</div>
+        </div>
+      </div>
+      <div class="time-item">
+        <div class="time-mark">NOVEMBER 2024</div>
+        <div class="time-card">
+          <div style="font-weight:700">First flower</div>
+          <img src="POTO/8.jpg" class="thumb" alt="moment 2" data-full="POTO/8.jpg">
+          <div style="color:var(--muted);margin-top:6px">LUCU BANGETTT BUNGANYAAA HUHUU, aku kira gaakan prnh dpt bunga seumur hidup</div>
+        </div>
+      </div>
+      <div class="time-item">
+        <div class="time-mark">DESEMBER 2024</div>
+        <div class="time-card">
+          <div style="font-weight:700">Nonton</div>
+          <img src="POTO/4.jpg" class="thumb" alt="moment 3" data-full="POTO/4.jpg">
+          <div style="color:var(--muted);margin-top:6px">nonton bareng2 rasa cuma berduaaa wkwkwk</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOVE NOTES -->
+  <section id="notes">
+    <div class="section-title">Tut Notes</div>
+    <div class="grid-2">
+      <div class="panel note-bubble" id="noteA">u should remember i'm always proud of u, tut!</div>
+      <div class="panel note-bubble" id="noteB">love u in every chance.</div>
+    </div>
+  </section>
+
+  <!-- MESSAGE COMPOSER -->
+  <section id="message">
+    <div class="section-title">Message — Tulis & Kirim</div>
+    <div class="panel composer">
+      <input id="nameField" placeholder="(opsional)" />
+      <textarea id="msgField">HAI!</textarea>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" id="applyNameBtn">Pasang Nama ke Preview</button>
+        <button class="btn" id="copyBtn">Salin Pesan</button>
+        <button class="btn" id="showPreviewBtn">Tampilkan di Preview</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+© Kartu Cinta — Buat sendiri, ganti gambar & lagu sesuka hati.
+</footer>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" style="display:none"></div>
+
+<script>
+// ----------------- AUDIO -----------------
+const playBtn = document.getElementById('playBgm');
+playBtn.addEventListener('click', ()=>{
+  bgm.muted = false;
+  bgm.play();
+  playBtn.style.display='none';
+});
+
+// ----------------- SLIDESHOW -----------------
+(function(){
+  const slides = document.querySelectorAll('#slideshow img');
+  let i=0;
+  const show = idx=>{ slides.forEach(s=>s.classList.remove('active')); slides[idx].classList.add('active'); }
+  document.getElementById('next').addEventListener('click', ()=>{i=(i+1)%slides.length;show(i);});
+  document.getElementById('prev').addEventListener('click', ()=>{i=(i-1+slides.length)%slides.length;show(i);});
+  setInterval(()=>{i=(i+1)%slides.length;show(i);},4200);
+})();
+
+// ----------------- LIGHTBOX -----------------
+(function(){
+  const thumbs = document.querySelectorAll('.thumb');
+  const lightbox = document.getElementById('lightbox');
+  thumbs.forEach(t=>{ t.addEventListener('click', ()=>{
+    const src = t.dataset.full || t.src;
+    lightbox.innerHTML = `<div class="lightbox"><button class="btn" id="closeLB" style="position:absolute;top:20px;right:20px;z-index:130">Tutup ✕</button><img src="${src}" alt="preview"></div>`;
+    lightbox.style.display='block';
+    document.getElementById('closeLB').addEventListener('click', ()=>{lightbox.style.display='none'; lightbox.innerHTML='';});
+    lightbox.addEventListener('click', (e)=>{ if(e.target===lightbox){lightbox.style.display='none'; lightbox.innerHTML='';} });
+  });});
+})();
+
+// ----------------- LOVE NOTES -----------------
+(function(){
+  const notes=["Kamu itu alasan aku senyum hari ini.","Besok aku mau traktir kopi — kamu ikut?","Kalau rinduku bisa diantar kurir, pasti sudah sampai.","Suaramu itu lagu favoritku.","Kamu bikin hal biasa jadi spesial."];
+  const noteA=document.getElementById('noteA');
+  const noteB=document.getElementById('noteB');
+  document.getElementById('newNote').addEventListener('click', ()=>{
+    const r=notes[Math.floor(Math.random()*notes.length)];
+    const s=notes[Math.floor(Math.random()*notes.length)];
+    noteA.textContent=r; noteB.textContent=s;
+  });
+  document.getElementById('copyNote').addEventListener('click', ()=>{
+    navigator.clipboard?.writeText(noteA.textContent + " — " + noteB.textContent).then(()=>alert('Love notes disalin ✅')).catch(()=>alert('Gagal menyalin — coba manual.'));
+  });
+})();
+
+// ----------------- COMPOSER -----------------
+(function(){
+  const nameField=document.getElementById('nameField');
+  const msgField=document.getElementById('msgField');
+  const preview=document.getElementById('previewText');
+  document.getElementById('applyNameBtn').addEventListener('click', ()=>{
+    const n = nameField.value.trim();
+        preview.textContent = n ? `${n}, kamu selalu jadi alasan aku senyum hari ini 💙` : 'Hai — kamu selalu membuat hari-ku jadi lebih baik.';
+      });
+      document.getElementById('copyBtn').addEventListener('click', ()=>{
+        const name = nameField.value.trim();
+        const text = (name ? name + ': ' : '') + msgField.value;
+        navigator.clipboard?.writeText(text).then(()=>alert('Pesan disalin ✅')).catch(()=>alert('Gagal menyalin — coba manual.'));
+      });
+      document.getElementById('showPreviewBtn').addEventListener('click', ()=>{ preview.textContent = msgField.value; });
+
+    })();
+
+    /* ------------------------
+       Small accessibility & cleanup
+       ------------------------ */
+    window.addEventListener('beforeunload', ()=>{ try{ document.getElementById('bgm').pause(); }catch(e){} });
+  </script>
+</body>
+</html>
